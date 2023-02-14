@@ -40,19 +40,36 @@ def start_pomodoro():
     work_time_seconds = work_time * 60
     break_time_seconds = break_time * 60
     
+    # Flag to stop the loop
+    stop_flag = False
+
+    # Stop button event handler
+    def stop_pomodoro():
+        nonlocal stop_flag
+        stop_flag = True
+
+    # Create and pack the stop button
+    stop_button = tkinter.Button(interface, text='Stop', background='Red', foreground='Black', command=stop_pomodoro)
+    stop_button.pack(padx=10, pady=10)
+
     cont = True
-    while cont == True:
+    while cont == True and not stop_flag:
         for i in range(work_time_seconds, -1, -1): 
             minute = i // 60
             seconds = i % 60
             pomodoro_label.config(text=f'{str(minute).zfill(2)}:{str(seconds).zfill(2)}')
             interface.update()
             time.sleep(1)
+            if stop_flag: break
         
+        if stop_flag: break
+
         for i in range(5):
             winsound.Beep(i+100, 500)
 
         messagebox.showinfo("Break time", f'{break_time} minute break')
+
+        if stop_flag: break
 
         for i in range(break_time_seconds, -1, -1):
             minute = i // 60
@@ -60,10 +77,16 @@ def start_pomodoro():
             pomodoro_label.config(text=f'{minute}:{seconds}')
             interface.update()
             time.sleep(1)
+            if stop_flag: break
+
+        if stop_flag: break
          
         continuation = messagebox.askyesno('Do you want to continue?')
         if continuation == True: continue
         else: break
+
+    # Remove the stop button
+    stop_button.pack_forget()
 
 pomodoro_button = tkinter.Button(interface, text='Start Pomodoro', background='Red', foreground='Black', command=start_pomodoro)
 pomodoro_button.pack(padx=10, pady=10)
@@ -71,3 +94,4 @@ pomodoro_label = tkinter.Label(interface, text='', font=('Helvetica', 48))
 pomodoro_label.pack(padx=10, pady=10)
 
 the_clock()
+interface.mainloop()
